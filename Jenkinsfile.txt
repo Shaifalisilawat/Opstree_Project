@@ -1,0 +1,21 @@
+pipeline{
+	agent{
+		label{
+			label "built-in"
+			}
+		}
+		stages {
+			stage('Continous Integration') {
+				steps {
+					git changelog: false, credentialsId: 'Git_token', poll: false, url: 'https://github.com/Shaifalisilawat/Opstree_Project.git'
+					sh "sudo mvn clean install"
+				}
+			stage('Continous Deployment'){
+				steps{
+				    sh "sudo chmod 400 tokyo_key.pem"
+					sh "sudo scp -r -i tokyo_key.pem *.war ec2-user@172.31.44.14:/root/apache-tomcat-9.0.62/webapps
+				}
+			}
+		}
+	}
+}
